@@ -1,0 +1,75 @@
+name: ci
+
+on:
+  # Triggers the workflow every day
+  #schedule:
+    #- cron: "0 8 * * *" 
+    
+  push:
+    branches:
+      - 'main'
+env:
+  org_secret: ${{ secrets.org }}
+  projectKey_secret: ${{ secrets.projectKey }}
+  SONARQUBE_URL: ${{ secrets.SONARQUBE_URL}}
+  
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      -
+        uses: actions/checkout@v3
+        name: Set up JDK 17
+      -
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - 
+        name: set env
+        run: echo "NOW=$(date +'%d%m%Y')" >> $GITHUB_ENV    
+      -
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
+      -
+        name: clone spark master
+        run: git clone https://github.com/apache/spark.git
+      - 
+        name: install sonar 
+        run: |
+          ENV sonar=/usr/local/sonar && WORKDIR ${sonar}
+          wget -qO "sonar-scanner.zip" https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
+          unzip "sonar-scanner.zip"
+          ENV PATH="${PATH}:${sonar}/sonar-scanner-4.7.0.2747-linux/bin"
+      #- name: Build with Maven
+        #run: mvn --batch-mode --update-snapshots package
+        # name: copy spark
+        # run:
+      -
+        name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: bjornjorgensen/jupyter-spark-master-docker:${{ env.NOW }} , bjornjorgensen/jupyter-spark-master-docker:latest
