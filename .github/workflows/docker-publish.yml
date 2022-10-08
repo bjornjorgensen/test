@@ -50,7 +50,8 @@ jobs:
       - 
         name: install sonar 
         run: |
-          ENV sonar=/usr/local/sonar && WORKDIR ${sonar}
+          ENV sonar=/usr/local/sonar
+          WORKDIR ${sonar}
           wget -qO "sonar-scanner.zip" https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
           unzip "sonar-scanner.zip"
           ENV PATH="${PATH}:${sonar}/sonar-scanner-4.7.0.2747-linux/bin"
