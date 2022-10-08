@@ -48,7 +48,6 @@ jobs:
         name: clone spark master
         #run: git clone https://github.com/apache/spark.git
         run: pwd
-      - 
       - name: Analyze with SonarCloud         
 
         # You can pin the exact commit or the version.
