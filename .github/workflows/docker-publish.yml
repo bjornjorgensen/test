@@ -46,8 +46,6 @@ jobs:
           pip install build
       - uses: actions/checkout@v3
         with:
-          # Repository name with owner. For example, actions/checkout
-          # Default: ${{ github.repository }}
           repository: ${{ secrets.repository}}
       - name: Analyze with SonarCloud   
         run: |
