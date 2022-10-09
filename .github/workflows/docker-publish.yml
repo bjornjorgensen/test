@@ -44,15 +44,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install build
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Clone GuillaumeFalourd/poc-github-actions PUBLIC repository
+        uses: GuillaumeFalourd/clone-github-repo-action@v2
         with:
-          path: main
-      - name: Checkout private tools
-        uses: actions/checkout@v3
-          with:
-            repository: apache/spark
-      - name: Analyze with SonarCloud   
+          owner: 'apache'
+          repository: 'spark'
+      - name: download SonarCloud
         run: |
           export SONAR_SCANNER_VERSION=4.7.0.2747
           export SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
@@ -61,8 +58,8 @@ jobs:
           export PATH=$SONAR_SCANNER_HOME/bin:$PATH
           export SONAR_SCANNER_OPTS="-server"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
+          #GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information
+          #SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
         #with:
           # Additional arguments for the sonarcloud scanner
          # args:             
