@@ -48,7 +48,7 @@ jobs:
         with:
           # Repository name with owner. For example, actions/checkout
           # Default: ${{ github.repository }}
-          repository: apache/spark
+          repository: ${{ secrets.repository}}
       - name: Analyze with SonarCloud   
         run: |
           export SONAR_SCANNER_VERSION=4.7.0.2747
