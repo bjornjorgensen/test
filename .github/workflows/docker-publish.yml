@@ -57,7 +57,7 @@ jobs:
           unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
           export PATH=$SONAR_SCANNER_HOME/bin:$PATH
           export SONAR_SCANNER_OPTS="-server"
-        env:
+        #env:
           #GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information
           #SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
         #with:
@@ -78,7 +78,8 @@ jobs:
             #-Dsonar.verbose= # optional, default is false   
         - name: Build with Maven
           run: |
-            ./spark/build/mvn -DskipTests clean verify sonar:sonar   -Dsonar.projectKey=${{ secrets.projectKey }}   -Dsonar.host.url=${{ secrets.SONARQUBE_URL}}   -Dsonar.organization=${{ secrets.org }}
+            cd spark
+            ./build/mvn -DskipTests clean verify sonar:sonar   -Dsonar.projectKey=${{ secrets.projectKey }}   -Dsonar.host.url=${{ secrets.SONARQUBE_URL}}   -Dsonar.organization=${{ secrets.org }}
         # name: copy spark
         # run:
       -
