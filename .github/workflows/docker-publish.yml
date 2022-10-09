@@ -59,9 +59,6 @@ jobs:
       - 
         name: Build with Maven
         run: |
-            ls
-            pwd
-            cd spark
             ./build/mvn -DskipTests clean verify sonar:sonar \
             -Dsonar.projectKey=${{ secrets.projectKey }} \
             -Dsonar.host.url=${{ secrets.SONARQUBE_URL }} \
