@@ -81,8 +81,9 @@ jobs:
             #-Dsonar.tests= # optional. For more info about Code Coverage, please refer to https://docs.sonarcloud.io/enriching/test-coverage/overview/
             # Adds more detail to both client and server-side analysis logs, activating DEBUG mode for the scanner, and adding client-side environment variables and system properties to the server-side log of analysis report processing.
             #-Dsonar.verbose= # optional, default is false   
-      #- name: Build with Maven
-        #run: mvn --batch-mode --update-snapshots package
+        - name: Build with Maven
+          run: |
+            ./spark/build/mvn -DskipTests clean verify sonar:sonar   -Dsonar.projectKey=${{ secrets.projectKey }}   -Dsonar.host.url=${{ secrets.SONARQUBE_URL}}   -Dsonar.organization=${{ secrets.org }}
         # name: copy spark
         # run:
       -
