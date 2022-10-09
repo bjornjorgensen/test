@@ -69,7 +69,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./build/mvn -DskipTests verify sonar:sonar \
-          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.host.url=${{ secrets.SONARQUBE_URL}} \
           -Dsonar.organization=${{ secrets.org }} \
           -Dsonar.projectKey=${{ secrets.projectKey }}
         # name: copy spark
