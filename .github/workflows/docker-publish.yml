@@ -49,8 +49,8 @@ jobs:
           # Repository name with owner. For example, actions/checkout
           # Default: ${{ github.repository }}
           repository: 'apache/spark'
-      #- name: clone spark master
-        #run: git clone https://github.com/apache/spark.git
+      - name: clone spark master
+        run: git clone https://github.com/apache/spark.git
       - name: Analyze with SonarCloud         
         # You can pin the exact commit or the version.
         # uses: SonarSource/sonarcloud-github-action@de2e56b42aa84d0b1c5b622644ac17e505c9a049
