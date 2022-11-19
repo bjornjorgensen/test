@@ -48,22 +48,22 @@ RUN apt-get update --yes && \
 
 WORKDIR /tmp
 
-RUN git clone https://github.com/apache/spark.git
+#RUN git clone https://github.com/apache/spark.git
 
-WORKDIR /tmp/spark 
+#WORKDIR /tmp/spark 
 
 #RUN export MAVEN_OPTS="-Xss64m -Xmx2g -XX:ReservedCodeCacheSize=1g"
 
 #RUN  ./build/mvn -DskipTests clean package && \
 #    ./dev/make-distribution.sh --name spark-master --pip
 
-ADD make-dist.sh /tmp/spark
-WORKDIR /tmp/spark
-RUN chmod a+x make-dist.sh
-ENV MAVEN_HOME /usr/share/maven
+#ADD make-dist.sh /tmp/spark
+#WORKDIR /tmp/spark
+#RUN chmod a+x make-dist.sh
+#ENV MAVEN_HOME /usr/share/maven
 #RUN ./build/mvn -DskipTests clean package 
-RUN ./make-dist.sh --pip
-WORKDIR /opt/spark
+#RUN ./make-dist.sh --pip
+#WORKDIR /opt/spark
 #USER ${NB_UID} 
 RUN pip install -e python  
 RUN pip install --upgrade jupyterlab-git scalene 'black[jupyter]' xmltodict jupyterlab-code-formatter isort python-dotenv nbdev
