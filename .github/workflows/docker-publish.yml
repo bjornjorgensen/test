@@ -69,11 +69,11 @@ jobs:
         run: ls
 
       - uses: actions/checkout@v3
-      - name: Build with spark
-        run: build/mvn -DskipTests verify sonar:sonar \
-          -Dsonar.host.url=${{ secrets.SONARQUBE_URL}} \
-          -Dsonar.organization=${{ secrets.org }} \
-          -Dsonar.projectKey=${{ secrets.projectKey }}
+      #- name: Build with spark
+      #  run: build/mvn -DskipTests verify sonar:sonar \
+      #    -Dsonar.host.url=${{ secrets.SONARQUBE_URL}} \
+      #    -Dsonar.organization=${{ secrets.org }} \
+      #    -Dsonar.projectKey=${{ secrets.projectKey }}
         # name: copy spark
         # run:
       - uses: actions/checkout@v3
