@@ -67,11 +67,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           cache: 'maven'
-       - name: Build with Maven
-          run: mvn -B package --file pom.xml
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
 
-       - uses: actions/checkout@v3
-       - name: Build with spark
+      - uses: actions/checkout@v3
+      - name: Build with spark
         run: ./build/mvn -DskipTests verify sonar:sonar \
           -Dsonar.host.url=${{ secrets.SONARQUBE_URL}} \
           -Dsonar.organization=${{ secrets.org }} \
