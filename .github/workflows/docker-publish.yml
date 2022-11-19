@@ -68,12 +68,8 @@ jobs:
       - name: ls
         run: ls
 
-      - uses: actions/checkout@v3
-      #- name: Build with spark
-      #  run: build/mvn -DskipTests verify sonar:sonar \
-      #    -Dsonar.host.url=${{ secrets.SONARQUBE_URL}} \
-      #    -Dsonar.organization=${{ secrets.org }} \
-      #    -Dsonar.projectKey=${{ secrets.projectKey }}
+      #- uses: actions/checkout@v3
+
         # name: copy spark
         # run:
       - uses: actions/checkout@v3
@@ -82,8 +78,11 @@ jobs:
           distribution: "temurin"
           java-version: "17"
           cache: "maven"
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
+      - name: Build with spark
+        run: build/mvn -DskipTests verify sonar:sonar \
+          -Dsonar.host.url=${{ secrets.SONARQUBE_URL}} \
+          -Dsonar.organization=${{ secrets.org }} \
+          -Dsonar.projectKey=${{ secrets.projectKey }}
 
       - name: Login to DockerHub
         uses: docker/login-action@v2
