@@ -35,6 +35,8 @@ jobs:
         uses: actions/checkout@v3.1.0
         with:
           repository: apache/spark
+      - name: pwd
+        run: pwd
       - name: download SonarCloud
         run: |
           export SONAR_SCANNER_VERSION=4.7.0.2747
@@ -64,7 +66,8 @@ jobs:
 
       - uses: actions/checkout@v3
       - name: Build with spark
-        run: ./build/mvn -DskipTests verify sonar:sonar \
+        run: ls
+          ./build/mvn -DskipTests verify sonar:sonar \
           -Dsonar.host.url=${{ secrets.SONARQUBE_URL}} \
           -Dsonar.organization=${{ secrets.org }} \
           -Dsonar.projectKey=${{ secrets.projectKey }}
