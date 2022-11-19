@@ -3,39 +3,35 @@ name: ci
 on:
   # Triggers the workflow every day
   #schedule:
-    #- cron: "0 8 * * *" 
-    
+  #- cron: "0 8 * * *"
+
   push:
     branches:
-      - 'main'
+      - "main"
 env:
   org_secret: ${{ secrets.org }}
   projectKey_secret: ${{ secrets.projectKey }}
   SONARQUBE_URL: ${{ secrets.SONARQUBE_URL}}
-  
+
 jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v2
-      -
-        name: Set up QEMU
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
-      -
-        name: Set up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      - 
-        name: Set up Python
+      - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: '3.x'
+          python-version: "3.x"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install build
-      - name: Clone 
+      - name: Clone
         uses: actions/checkout@master
         with:
           repository: apache/spark
@@ -46,14 +42,13 @@ jobs:
           curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip
           unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
           export PATH=$SONAR_SCANNER_HOME/bin:$PATH
-          #export SONAR_SCANNER_OPTS="-server"  
+          #export SONAR_SCANNER_OPTS="-server"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
-          with:
-           Additional arguments for the sonarcloud scanner
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
+          with: Additional arguments for the sonarcloud scanner
           args:
-              # Unique keys of your project and organization. You can find them in SonarCloud > Information (bottom-left menu)
+            # Unique keys of your project and organization. You can find them in SonarCloud > Information (bottom-left menu)
             # mandatory
             -Dsonar.projectKey=${{ secrets.projectKey }}
             -Dsonar.organization=${{ secrets.org }}
@@ -66,17 +61,13 @@ jobs:
             #-Dsonar.tests= # optional. For more info about Code Coverage, please refer to https://docs.sonarcloud.io/enriching/test-coverage/overview/
             # Adds more detail to both client and server-side analysis logs, activating DEBUG mode for the scanner, and adding client-side environment variables and system properties to the server-side log of analysis report processing.
             #-Dsonar.verbose= # optional, default is false
-            
-      - name: Build and analyze
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: 'maven'    
+          distribution: "temurin"
+          java-version: "17"
+          cache: "maven"
       - name: Build with Maven
         run: ./build/mvn -DskipTests verify sonar:sonar \
           -Dsonar.host.url=${{ secrets.SONARQUBE_URL}} \
@@ -84,17 +75,14 @@ jobs:
           -Dsonar.projectKey=${{ secrets.projectKey }}
         # name: copy spark
         # run:
-      -
-        name: Login to DockerHub
+      - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - 
-        name: set env
-        run: echo "NOW=$(date +'%d%m%Y')" >> $GITHUB_ENV 
-      -
-        name: Build and push
+      - name: set env
+        run: echo "NOW=$(date +'%d%m%Y')" >> $GITHUB_ENV
+      - name: Build and push
         uses: docker/build-push-action@v3
         with:
           push: true
