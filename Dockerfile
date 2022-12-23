@@ -2,6 +2,8 @@ FROM ubuntu:22.10 AS builder
 
 ARG openjdk_version="17"
 
+USER root
+
 RUN apt-get update --yes && \
     apt-get install --yes --no-install-recommends \
     "openjdk-${openjdk_version}-jdk-headless" \
