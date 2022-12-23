@@ -1,3 +1,39 @@
+FROM ubuntu:22.10 AS builder
+
+ARG openjdk_version="17"
+
+RUN apt-get update --yes && \
+    apt-get install --yes --no-install-recommends \
+    "openjdk-${openjdk_version}-jdk-headless" \
+    "openjdk-${openjdk_version}-jre" \
+    ca-certificates-java \
+    git maven wget\
+    python3 \
+    pip && \
+    pip install --upgrade pip setuptools && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* 
+
+WORKDIR /opt
+
+RUN git clone https://github.com/apache/spark.git
+
+WORKDIR /opt/spark 
+
+#RUN export MAVEN_OPTS="-Xss64m -Xmx2g -XX:ReservedCodeCacheSize=1g"
+
+#RUN  ./build/mvn -DskipTests clean package && \
+#    ./dev/make-distribution.sh --name spark-master --pip
+
+ADD make-dist.sh /opt/spark
+WORKDIR /opt/spark
+RUN chmod a+x make-dist.sh
+ENV MAVEN_HOME /usr/share/maven
+#RUN ./build/mvn -DskipTests clean package 
+RUN ./make-dist.sh --pip
+WORKDIR /opt/spark
+
+
+
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
 #ARG OWNER=jupyter
@@ -28,6 +64,7 @@ ARG openjdk_version="17"
 RUN apt-get update --yes && \
     apt-get install --yes --no-install-recommends \
     "openjdk-${openjdk_version}-jdk-headless" \
+    "openjdk-${openjdk_version}-jre" \
     ca-certificates-java \
     git maven wget\
     python3 \
@@ -46,75 +83,43 @@ RUN apt-get update --yes && \
  #   mkdir -p /opt/spark/work-dir
     #touch /opt/spark/RELEASE
 
-WORKDIR /tmp
 
-#RUN git clone https://github.com/apache/spark.git
 
-#WORKDIR /tmp/spark 
-
-#RUN export MAVEN_OPTS="-Xss64m -Xmx2g -XX:ReservedCodeCacheSize=1g"
-
-#RUN  ./build/mvn -DskipTests clean package && \
-#    ./dev/make-distribution.sh --name spark-master --pip
-
-#ADD make-dist.sh /tmp/spark
-#WORKDIR /tmp/spark
-#RUN chmod a+x make-dist.sh
-#ENV MAVEN_HOME /usr/share/maven
-#RUN ./build/mvn -DskipTests clean package 
-#RUN ./make-dist.sh --pip
-#WORKDIR /opt/spark
-#USER ${NB_UID} 
-RUN pip install -e python  
-RUN pip install --upgrade jupyterlab-git scalene 'black[jupyter]' xmltodict jupyterlab-code-formatter isort python-dotenv nbdev
 
 
 USER root
 # Based on the Spark dockerfile
-#RUN  mv jars /opt/spark/jars && \
-#    mv bin /opt/spark/bin && \
-#    mv sbin /opt/spark/sbin && \
-    #mv kubernetes/dockerfiles/spark/entrypoint.sh /opt/ && \
+RUN  COPY --from=builder jars /opt/spark/jars && \
+    COPY --from=builder bin /opt/spark/bin && \
+    COPY --from=builder sbin /opt/spark/sbin && \
+    COPY --from=builder kubernetes/dockerfiles/spark/entrypoint.sh /opt/ && \
 # Wildcard so it covers decom.sh present (3.1+) and not present (pre-3.1)
-    #mv kubernetes/dockerfiles/spark/decom.sh* /opt/ && \
-#    mv examples /opt/spark/examples && \
-    #mv kubernetes/tests /opt/spark/tests && \
-#    mv data /opt/spark/data && \
+    COPY --from=builder kubernetes/dockerfiles/spark/decom.sh* /opt/ && \
+    COPY --from=builder examples /opt/spark/examples && \
+    COPY --from=builder kubernetes/tests /opt/spark/tests && \
+    COPY --from=builder data /opt/spark/data && \
 # We need to copy over the license file so we can pip install PySpark
-#    mv LICENSE /opt/spark/LICENSE && \
-#    mv licenses /opt/spark/licenses && \
-#    mv python /opt/spark/python
+    COPY --from=builder LICENSE /opt/spark/LICENSE && \
+    COPY --from=builder licenses /opt/spark/licenses && \
+    COPY --from=builder python /opt/spark/python
 
-RUN rm -rf /tmp/spark
-RUN rm -rf /tmp/.m2
-RUN rm -rf /tmp/.sbt
-
-#sonarcloud
-ENV sonar=/usr/local/sonar
-WORKDIR ${sonar}
-RUN wget -qO "sonar-scanner.zip" https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip && \
-    unzip "sonar-scanner.zip"
-ENV PATH="${PATH}:${sonar}/sonar-scanner-4.7.0.2747-linux/bin"
-
+#USER ${NB_UID} 
+RUN pip install -e python  
+RUN pip install --upgrade jupyterlab-git scalene 'black[jupyter]' xmltodict jupyterlab-code-formatter isort python-dotenv nbdev
 
 WORKDIR /opt/spark
 ENV SPARK_HOME /opt/spark
 
-RUN rm /usr/local/sonar/sonar-scanner-4.7.0.2747-linux/conf/sonar-scanner.properties
-ADD sonar-scanner.properties /usr/local/sonar/sonar-scanner-4.7.0.2747-linux/conf/
-#RUN cat /usr/local/sonar/sonar-scanner-4.7.0.2747-linux/conf/sonar-scanner.properties
-
-#RUN sonar-scanner -Dsonar.organization=$org_secret -Dsonar.projectKey=$projectKey_secret -Dsonar.sources=/opt/spark/python -Dsonar.host.url=https://sonarcloud.io
 
 RUN fix-permissions "${SPARK_HOME}"
-#    fix-permissions "/opt/spark/jars" && \
-#    fix-permissions "/opt/spark/bin" && \
-#    fix-permissions "/opt/spark/sbin" && \
-#    fix-permissions "/opt/spark/examples" && \
-#    fix-permissions "/opt/spark/data" && \
-#    fix-permissions "/opt/spark/LICENSE" && \
-#    fix-permissions "/opt/spark/python" && \
-#    fix-permissions "/opt/spark/licenses"
+    fix-permissions "/opt/spark/jars" && \
+    fix-permissions "/opt/spark/bin" && \
+    fix-permissions "/opt/spark/sbin" && \
+    fix-permissions "/opt/spark/examples" && \
+    fix-permissions "/opt/spark/data" && \
+    fix-permissions "/opt/spark/LICENSE" && \
+    fix-permissions "/opt/spark/python" && \
+    fix-permissions "/opt/spark/licenses"
 
 # Note: don't change the workdir since then your Jupyter notebooks won't persist.
 #RUN chmod g+w /opt/spark/work-dir
