@@ -15,19 +15,19 @@ RUN apt-get update --yes && \
     pip install --upgrade pip setuptools && \
     apt-get clean && rm -rf /var/lib/apt/lists/* 
 
-WORKDIR /opt
+WORKDIR /tmp/
 
 RUN git clone https://github.com/apache/spark.git
 
-WORKDIR /opt/spark 
+WORKDIR /tmp/spark 
 
 #RUN export MAVEN_OPTS="-Xss64m -Xmx2g -XX:ReservedCodeCacheSize=1g"
 
 #RUN  ./build/mvn -DskipTests clean package && \
 #    ./dev/make-distribution.sh --name spark-master --pip
 
-ADD make-dist.sh /opt/spark
-WORKDIR /opt/spark
+ADD make-dist.sh /tmp/spark
+WORKDIR /tmp/spark
 RUN chmod a+x make-dist.sh
 ENV MAVEN_HOME /usr/share/maven
 #RUN ./build/mvn -DskipTests clean package 
