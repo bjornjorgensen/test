@@ -68,7 +68,7 @@ RUN apt-get update --yes && \
     "openjdk-${openjdk_version}-jdk-headless" \
     "openjdk-${openjdk_version}-jre" \
     ca-certificates-java \
-    git maven wget\
+    wget\
     python3 \
     pip && \
     pip install --upgrade pip setuptools && \
@@ -113,7 +113,7 @@ WORKDIR /opt/spark
 ENV SPARK_HOME /opt/spark
 
 
-RUN fix-permissions "${SPARK_HOME}"
+RUN fix-permissions "${SPARK_HOME}" && \
     fix-permissions "/opt/spark/jars" && \
     fix-permissions "/opt/spark/bin" && \
     fix-permissions "/opt/spark/sbin" && \
@@ -136,14 +136,14 @@ RUN chmod a+x /opt/decom.sh* || echo "No decom script present, assuming pre-3.1"
 #RUN chmod a+rx ${SPARK_HOME}/python
 #USER ${NB_UID}
 
-#RUN fix-permissions "${SPARK_HOME}" && \
-#    fix-permissions "/home/${NB_USER}" && \
-#    fix-permissions "/home/jovyan/.cache/"
+RUN fix-permissions "${SPARK_HOME}" && \
+    fix-permissions "/home/${NB_USER}" && \
+    fix-permissions "/home/jovyan/.cache/"
 
 #USER ${NB_UID}
 #RUN ls /opt/spark/python
-#RUN pip install -e /opt/spark/python
-#RUN fix-permissions "/home/${NB_USER}"
+RUN pip install -e /opt/spark/python
+RUN fix-permissions "/home/${NB_USER}"
 
 # Add S3A support
 ADD https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.312/aws-java-sdk-bundle-1.12.312.jar ${SPARK_HOME}/jars/
