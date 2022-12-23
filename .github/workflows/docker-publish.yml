@@ -8,10 +8,7 @@ on:
   push:
     branches:
       - "main"
-env:
-  org_secret: ${{ secrets.org }}
-  projectKey_secret: ${{ secrets.projectKey }}
-  SONARQUBE_URL: ${{ secrets.SONARQUBE_URL}}
+
 
 jobs:
   docker:
@@ -23,68 +20,7 @@ jobs:
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.x"
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install build
-      - name: Install openJDK
-        run: apt-get install opensjdk
-      - name: Clone
-        uses: actions/checkout@v3.1.0
-        with:
-          repository: apache/spark
-      - name: pwd
-        run: pwd
-      - name: download SonarCloud
-        run: |
-          export SONAR_SCANNER_VERSION=4.7.0.2747
-          export SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
-          curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip
-          unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
-          export PATH=$SONAR_SCANNER_HOME/bin:$PATH
-          #export SONAR_SCANNER_OPTS="-server"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
-          with: Additional arguments for the sonarcloud scanner
-          args:
-            # Unique keys of your project and organization. You can find them in SonarCloud > Information (bottom-left menu)
-            # mandatory
-            -Dsonar.projectKey=${{ secrets.projectKey }}
-            -Dsonar.organization=${{ secrets.org }}
-            -Dsonar.host.url=${{ secrets.SONARQUBE_URL}}
-            # Comma-separated paths to directories containing main source files.
-            #-Dsonar.sources=python # optional, default is project base directory
-            # When you need the analysis to take place in a directory other than the one from which it was launched
-            #-Dsonar.projectBaseDir= # optional, default is .
-            # Comma-separated paths to directories containing test source files.
-            #-Dsonar.tests= # optional. For more info about Code Coverage, please refer to https://docs.sonarcloud.io/enriching/test-coverage/overview/
-            # Adds more detail to both client and server-side analysis logs, activating DEBUG mode for the scanner, and adding client-side environment variables and system properties to the server-side log of analysis report processing.
-            #-Dsonar.verbose= # optional, default is false
-
-
-      - name: ls
-        run: ls
-
-      #- uses: actions/checkout@v3
-
-        # name: copy spark
-        # run:
-#      - uses: actions/checkout@v3
-#      - uses: actions/setup-java@v3
-#        with:
-#          distribution: "temurin"
-#          java-version: "17"
-#          cache: "maven"
-      - name: Build with spark
-        run: ./build/mvn -DskipTests verify sonar:sonar \
-          -Dsonar.host.url=${{ secrets.SONARQUBE_URL}} \
-          -Dsonar.organization=${{ secrets.org }} \
-          -Dsonar.projectKey=${{ secrets.projectKey }}
+      - run: docker build . -t test
 
       - name: Login to DockerHub
         uses: docker/login-action@v2
@@ -97,4 +33,4 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: bjornjorgensen/jupyter-spark-master-docker:${{ env.NOW }} , bjornjorgensen/jupyter-spark-master-docker:latest
+          tags: bjornjorgensen/jupyter-test:${{ env.NOW }} , bjornjorgensen/jupyter-test:latest
