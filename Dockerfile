@@ -22,9 +22,8 @@ WORKDIR /tmp/spark
 
 RUN ./dev/make-distribution.sh --name custom-spark --pip -Pkubernetes
 
-FROM jupyter/scipy-notebook
+FROM debian:testing AS runtime
 
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 USER root
 
@@ -40,9 +39,6 @@ RUN apt-get update --yes && \
     python3 \
     apt-get clean && rm -rf /var/lib/apt/lists/* 
 
-
-USER root
-
 RUN  COPY --from=builder jars /opt/spark/jars && \
     COPY --from=builder bin /opt/spark/bin && \
     COPY --from=builder sbin /opt/spark/sbin && \
@@ -57,7 +53,7 @@ RUN  COPY --from=builder jars /opt/spark/jars && \
 
 #USER ${NB_UID} 
 RUN pip install -e python  
-RUN pip install --upgrade jupyterlab-git scalene 'black[jupyter]' xmltodict jupyterlab-code-formatter isort python-dotenv nbdev
+RUN pip install --upgrade jupyterlab-git scalene 'black[jupyter]' xmltodict jupyterlab-code-formatter isort python-dotenv nbdev pyarrow
 
 WORKDIR /opt/spark
 ENV SPARK_HOME /opt/spark
@@ -92,18 +88,6 @@ RUN chmod a+rx ${SPARK_HOME}/jars/*.jar
 COPY ipython_kernel_config.py "/etc/ipython/"
 RUN fix-permissions "/etc/ipython/"
 
-
-
-#Install pyarrow
-RUN arch=$(uname -m) && \
-    if [ "${arch}" == "aarch64" ]; then \
-        export G_SLICE=always-malloc; \
-    fi && \
-    mamba install --quiet --yes \
-    'pyarrow' 'hvplot' 'datashader' && \
-    mamba clean --all -f -y && \
-    fix-permissions "${CONDA_DIR}" && \
-    fix-permissions "/home/${NB_USER}"
 
 WORKDIR "${HOME}"
 
