@@ -9,11 +9,16 @@ RUN apt-get update --yes && \
     "openjdk-${openjdk_version}-jdk" \
     "openjdk-${openjdk_version}-jre-headless" \
     ca-certificates-java \
-    git wget\
-    python3 \
-    pip && \
-    pip install --upgrade pip setuptools && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* 
+    git wget python3 python3-venv && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    python3 -m venv /opt/venv
+
+# Activate virtual environment
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Now use pip to install packages
+RUN pip install --upgrade pip setuptools
+
 
 
 WORKDIR /tmp/
