@@ -6,12 +6,14 @@ USER root
 
 RUN apt-get update --yes && \
     apt-get install --yes --no-install-recommends \
-    "openjdk-${openjdk_version}-jdk-headless" \
-    "openjdk-${openjdk_version}-jre" \
+    "openjdk-${openjdk_version}-jdk" \
+    "openjdk-${openjdk_version}-jre-headless" \
     ca-certificates-java \
-    wget \
-    python3 && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    git wget\
+    python3 \
+    pip && \
+    pip install --upgrade pip setuptools && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* 
 
 
 WORKDIR /tmp/
