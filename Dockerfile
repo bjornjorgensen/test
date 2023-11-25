@@ -1,6 +1,6 @@
-FROM ubuntu:22.10 AS builder
+FROM debian:testing AS builder
 
-ARG openjdk_version="17"
+ARG openjdk_version="21"
 
 USER root
 
@@ -26,13 +26,15 @@ WORKDIR /tmp/spark
 #RUN  ./build/mvn -DskipTests clean package && \
 #    ./dev/make-distribution.sh --name spark-master --pip
 
-ADD make-dist.sh /tmp/spark
-WORKDIR /tmp/spark
-RUN chmod a+x make-dist.sh
-ENV MAVEN_HOME /usr/share/maven
+RUN ./dev/make-distribution.sh --name custom-spark --pip -Pkubernetes
+
+#ADD make-dist.sh /tmp/spark
+#WORKDIR /tmp/spark
+#RUN chmod a+x make-dist.sh
+#ENV MAVEN_HOME /usr/share/maven
 #RUN ./build/mvn -DskipTests clean package 
-RUN ./make-dist.sh --pip
-WORKDIR /opt/spark
+#RUN ./make-dist.sh --pip
+#WORKDIR /opt/spark
 
 
 
