@@ -1,4 +1,4 @@
-name: ci
+name: build dep
 
 on:
   # Triggers the workflow every day
@@ -28,19 +28,9 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: set env
         run: echo "NOW=$(date +'%d%m%Y')" >> $GITHUB_ENV
-
-      # New Build and Push for spark-builder
-      - name: Build and push spark-builder
+      - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: spark-builder/.
+          context: dep-builder/.
           push: true
-          tags: bjornjorgensen/spark-builder:${{ env.NOW }}, bjornjorgensen/spark-builder:latest
-
-      # New Build and Push for spark-worker
-      - name: Build and push spark-worker
-        uses: docker/build-push-action@v5
-        with:
-          context: worker/.
-          push: true
-          tags: bjornjorgensen/spark-worker:${{ env.NOW }}, bjornjorgensen/spark-worker:latest
+          tags: bjornjorgensen/dep-builder:${{ env.NOW }} , bjornjorgensen/dep-builder:latest
