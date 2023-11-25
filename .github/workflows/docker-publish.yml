@@ -1,4 +1,4 @@
-name: ci
+name: build and push spark images
 
 on:
   # Triggers the workflow every day

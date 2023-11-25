@@ -1,5 +1,6 @@
 FROM bjornjorgensen/sparkbuilder AS builder
 
+FROM debian:testing
 
 USER root
 
