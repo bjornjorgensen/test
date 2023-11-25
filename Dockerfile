@@ -9,10 +9,10 @@ RUN apt-get update --yes && \
     "openjdk-${openjdk_version}-jdk-headless" \
     "openjdk-${openjdk_version}-jre" \
     ca-certificates-java \
-    git maven wget\
-    python3 \
-    pip && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* 
+    wget \
+    python3 && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
 
 WORKDIR /tmp/
 
@@ -35,21 +35,23 @@ RUN apt-get update --yes && \
     "openjdk-${openjdk_version}-jdk-headless" \
     "openjdk-${openjdk_version}-jre" \
     ca-certificates-java \
-    wget\
-    python3 \
-    apt-get clean && rm -rf /var/lib/apt/lists/* 
+    wget \
+    python3 && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+ 
 
-RUN  COPY --from=builder jars /opt/spark/jars && \
-    COPY --from=builder bin /opt/spark/bin && \
-    COPY --from=builder sbin /opt/spark/sbin && \
-    COPY --from=builder kubernetes/dockerfiles/spark/entrypoint.sh /opt/ && \
-    COPY --from=builder kubernetes/dockerfiles/spark/decom.sh* /opt/ && \
-    COPY --from=builder examples /opt/spark/examples && \
-    COPY --from=builder kubernetes/tests /opt/spark/tests && \
-    COPY --from=builder data /opt/spark/data && \
-    COPY --from=builder LICENSE /opt/spark/LICENSE && \
-    COPY --from=builder licenses /opt/spark/licenses && \
-    COPY --from=builder python /opt/spark/python
+RUN  COPY --from=builder /tmp/spark/jars /opt/spark/jars && \
+    COPY --from=builder /tmp/spark/bin /opt/spark/bin && \
+    COPY --from=builder /tmp/spark/sbin /opt/spark/sbin && \
+    COPY --from=builder /tmp/spark/kubernetes/dockerfiles/spark/entrypoint.sh /opt/ && \
+    COPY --from=builder /tmp/spark/kubernetes/dockerfiles/spark/decom.sh* /opt/ && \
+    COPY --from=builder /tmp/spark/examples /opt/spark/examples && \
+    COPY --from=builder /tmp/spark/kubernetes/tests /opt/spark/tests && \
+    COPY --from=builder /tmp/spark/data /opt/spark/data && \
+    COPY --from=builder /tmp/spark/LICENSE /opt/spark/LICENSE && \
+    COPY --from=builder /tmp/spark/licenses /opt/spark/licenses && \
+    COPY --from=builder /tmp/spark/python /opt/spark/python
+
 
 #USER ${NB_UID} 
 RUN pip install -e python  
