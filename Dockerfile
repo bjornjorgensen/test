@@ -40,17 +40,17 @@ RUN apt-get update --yes && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
  
 
-RUN  COPY --from=builder /tmp/spark/jars /opt/spark/jars && \
-    COPY --from=builder /tmp/spark/bin /opt/spark/bin && \
-    COPY --from=builder /tmp/spark/sbin /opt/spark/sbin && \
-    COPY --from=builder /tmp/spark/kubernetes/dockerfiles/spark/entrypoint.sh /opt/ && \
-    COPY --from=builder /tmp/spark/kubernetes/dockerfiles/spark/decom.sh* /opt/ && \
-    COPY --from=builder /tmp/spark/examples /opt/spark/examples && \
-    COPY --from=builder /tmp/spark/kubernetes/tests /opt/spark/tests && \
-    COPY --from=builder /tmp/spark/data /opt/spark/data && \
-    COPY --from=builder /tmp/spark/LICENSE /opt/spark/LICENSE && \
-    COPY --from=builder /tmp/spark/licenses /opt/spark/licenses && \
-    COPY --from=builder /tmp/spark/python /opt/spark/python
+COPY --from=builder /tmp/spark/jars /opt/spark/jars
+COPY --from=builder /tmp/spark/bin /opt/spark/bin
+COPY --from=builder /tmp/spark/sbin /opt/spark/sbin
+COPY --from=builder /tmp/spark/kubernetes/dockerfiles/spark/entrypoint.sh /opt/
+COPY --from=builder /tmp/spark/kubernetes/dockerfiles/spark/decom.sh* /opt/
+COPY --from=builder /tmp/spark/examples /opt/spark/examples
+COPY --from=builder /tmp/spark/kubernetes/tests /opt/spark/tests
+COPY --from=builder /tmp/spark/data /opt/spark/data
+COPY --from=builder /tmp/spark/LICENSE /opt/spark/LICENSE
+COPY --from=builder /tmp/spark/licenses /opt/spark/licenses
+COPY --from=builder /tmp/spark/python /opt/spark/python
 
 
 #USER ${NB_UID} 
