@@ -25,8 +25,6 @@ RUN apt-get update --yes && \
     #   the Ubuntu base image is rebuilt too seldom sometimes (less than once a month)
     apt-get upgrade --yes && \
     apt-get install --yes --no-install-recommends \
-    # - bzip2 is necessary to extract the micromamba executable.
-    bzip2 \
     ca-certificates \
     locales \
     sudo \
@@ -40,9 +38,13 @@ RUN apt-get update --yes && \
     "openjdk-${openjdk_version}-jre" \
     ca-certificates-java \
     wget && \
+    python3 -m venv /opt/venv \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     locale-gen
+
+# Activate virtual environment
+ENV PATH="/opt/venv/bin:$PATH"
 
 RUN pip install jupyterlab 
 
