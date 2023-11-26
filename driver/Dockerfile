@@ -34,6 +34,7 @@ RUN apt-get update --yes && \
     tini \
     python3 \
     python3-pip \
+    python3.11-venv \
     "openjdk-${openjdk_version}-jdk-headless" \
     "openjdk-${openjdk_version}-jre" \
     ca-certificates-java \
