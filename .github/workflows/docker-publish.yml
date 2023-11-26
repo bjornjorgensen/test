@@ -44,3 +44,11 @@ jobs:
           context: worker/.
           push: true
           tags: bjornjorgensen/spark-worker:${{ env.NOW }}, bjornjorgensen/spark-worker:latest
+
+      # New Build and Push for spark-driver
+      - name: Build and push spark-driver
+        uses: docker/build-push-action@v5
+        with:
+          context: driver/.
+          push: true
+          tags: bjornjorgensen/spark-driver:${{ env.NOW }}, bjornjorgensen/spark-driver:latest
