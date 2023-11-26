@@ -1,4 +1,4 @@
-FROM bjornjorgensen/sparkbuilder AS builder
+FROM bjornjorgensen/spark-builder AS builder
 
 FROM debian:testing
 
