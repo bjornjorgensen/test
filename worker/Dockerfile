@@ -6,7 +6,7 @@ USER root
 
 ARG openjdk_version="21"
 
-
+ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update --yes && \
     apt-get install --yes --no-install-recommends \
     "openjdk-${openjdk_version}-jdk-headless" \
@@ -28,31 +28,16 @@ COPY --from=builder /tmp/spark/LICENSE /opt/spark/LICENSE
 COPY --from=builder /tmp/spark/licenses /opt/spark/licenses
 COPY --from=builder /tmp/spark/python /opt/spark/python
 
-
+#WORKDIR /opt/spark
 #USER ${NB_UID} 
-RUN pip install -e python  
+#RUN pip install -e python  
 
 WORKDIR /opt/spark
 ENV SPARK_HOME /opt/spark
 
 
-RUN fix-permissions "${SPARK_HOME}" && \
-    fix-permissions "/opt/spark/jars" && \
-    fix-permissions "/opt/spark/bin" && \
-    fix-permissions "/opt/spark/sbin" && \
-    fix-permissions "/opt/spark/examples" && \
-    fix-permissions "/opt/spark/data" && \
-    fix-permissions "/opt/spark/LICENSE" && \
-    fix-permissions "/opt/spark/python" && \
-    fix-permissions "/opt/spark/licenses"
-
 RUN chmod a+x /opt/decom.sh* || echo "No decom script present, assuming pre-3.1"
 
-RUN fix-permissions "${SPARK_HOME}" && \
-    fix-permissions "/home/${NB_USER}" && \
-    fix-permissions "/home/jovyan/.cache/"
-
-RUN fix-permissions "/home/${NB_USER}"
 
 # Add S3A support
 ADD https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.503/aws-java-sdk-bundle-1.12.503.jar ${SPARK_HOME}/jars/
@@ -60,14 +45,15 @@ ADD https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws
 
 RUN chmod a+rx ${SPARK_HOME}/jars/*.jar 
 
-# Configure IPython system-wide
-COPY ipython_kernel_config.py "/etc/ipython/"
-RUN fix-permissions "/etc/ipython/"
 
 
-WORKDIR "${HOME}"
+WORKDIR /opt/spark/work-dir
+ENTRYPOINT [ "/opt/entrypoint.sh" ]
 
-USER ${NB_UID}
+# Specify the User that the actual main process will run as
+ARG spark_uid=185
+USER ${spark_uid}
+
 
 # Should match the service
 EXPOSE 2222
