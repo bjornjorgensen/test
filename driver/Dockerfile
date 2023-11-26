@@ -1,5 +1,6 @@
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
+FROM bjornjorgensen/spark-builder AS builder
 
 ARG ROOT_CONTAINER=debian:testing
 
@@ -51,6 +52,38 @@ RUN pip install jupyterlab
 
 ENV JUPYTER_PORT=8888
 EXPOSE $JUPYTER_PORT
+
+
+COPY --from=builder /tmp/spark/dist/jars /opt/spark/jars
+# Copy RELEASE file if exists
+COPY --from=builder /tmp/spark/dist/RELEAS[E] /opt/spark/RELEASE
+COPY --from=builder /tmp/spark/dist/bin /opt/spark/bin
+COPY --from=builder /tmp/spark/dist/sbin /opt/spark/sbin
+COPY --from=builder /tmp/spark/dist/kubernetes/dockerfiles/spark/entrypoint.sh /opt/
+COPY --from=builder /tmp/spark/dist/kubernetes/dockerfiles/spark/decom.sh /opt/
+COPY --from=builder /tmp/spark/dist/examples /opt/spark/examples
+RUN ln -s $(basename $(ls /opt/spark/examples/jars/spark-examples_*.jar)) /opt/spark/examples/jars/spark-examples.jar
+COPY --from=builder /tmp/spark/dist/kubernetes/tests /opt/spark/tests
+COPY --from=builder /tmp/spark/dist/data /opt/spark/data
+
+# Note: don't change the workdir since then your Jupyter notebooks won't persist.
+RUN chmod g+w /opt/spark/work-dir
+# Wildcard so it covers decom.sh present (3.1+) and not present (pre-3.1)
+RUN chmod a+x /opt/decom.sh* || echo "No decom script present, assuming pre-3.1"
+
+# Copy pyspark with setup files and everything
+COPY --from=builder /tmp/spark/dist/python ${SPARK_HOME}/python
+
+# Add PySpark to PYTHON_PATH
+RUN pip install -e ${SPARK_HOME}/python
+
+
+ENV SPARK_HOME /opt/spark
+# Add S3A support
+ADD https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.503/aws-java-sdk-bundle-1.12.503.jar ${SPARK_HOME}/jars/
+ADD https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar ${SPARK_HOME}/jars/
+
+RUN chmod a+rx ${SPARK_HOME}/jars/*.jar
 
 # Configure container startup
 CMD ["start-notebook.py"]
