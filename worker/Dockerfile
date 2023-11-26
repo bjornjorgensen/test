@@ -12,7 +12,6 @@ RUN apt-get update --yes && \
     apt-get install --yes --no-install-recommends \
     "openjdk-${openjdk_version}-jre" \
     ca-certificates-java \
-    ln -s /lib /lib64 && \
     apt install -y bash tini libc6 libpam-modules krb5-user libnss3 procps net-tools && \
     mkdir -p /opt/spark && \
     mkdir -p /opt/spark/examples && \
