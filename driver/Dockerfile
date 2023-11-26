@@ -35,6 +35,7 @@ RUN apt-get update --yes && \
     #   https://github.com/krallin/tini#why-tini for details.
     tini \
     python3 \
+    python3-pip \
     "openjdk-${openjdk_version}-jdk-headless" \
     "openjdk-${openjdk_version}-jre" \
     ca-certificates-java \
