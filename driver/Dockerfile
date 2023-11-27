@@ -64,6 +64,7 @@ RUN ln -s $(basename $(ls /opt/spark/examples/jars/spark-examples_*.jar)) /opt/s
 COPY --from=builder /tmp/spark/dist/kubernetes/tests /opt/spark/tests
 COPY --from=builder /tmp/spark/dist/data /opt/spark/data
 
+RUN mkdir /opt/spark/work-dir
 # Note: don't change the workdir since then your Jupyter notebooks won't persist.
 RUN chmod g+w /opt/spark/work-dir
 # Wildcard so it covers decom.sh present (3.1+) and not present (pre-3.1)
