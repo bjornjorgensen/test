@@ -2,9 +2,7 @@
 # Distributed under the terms of the Modified BSD License.
 FROM bjornjorgensen/spark-builder AS builder
 
-ARG ROOT_CONTAINER=debian:testing
-
-FROM $ROOT_CONTAINER
+FROM debian:testing
 
 
 ARG NB_USER="jovyan"
