@@ -39,6 +39,7 @@ RUN apt-get update --yes && \
     ca-certificates-java \
     wget && \
     python3 -m venv /opt/venv \
+    pip3 install --upgrade pip setuptools && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     locale-gen
@@ -70,14 +71,17 @@ RUN chmod g+w /opt/spark/work-dir
 # Wildcard so it covers decom.sh present (3.1+) and not present (pre-3.1)
 RUN chmod a+x /opt/decom.sh* || echo "No decom script present, assuming pre-3.1"
 
-# Copy pyspark with setup files and everything
-COPY --from=builder /tmp/spark/dist/python ${SPARK_HOME}/python
-
-# Add PySpark to PYTHON_PATH
-RUN pip install -e ${SPARK_HOME}/python
-
-
 ENV SPARK_HOME /opt/spark
+
+# Copy pyspark with setup files and everything
+#COPY --from=builder /tmp/spark/dist/python ${SPARK_HOME}/python
+COPY --from=builder /tmp/spark/dist/python/pyspark ${SPARK_HOME}/python/pyspark
+COPY --from=builder /tmp/spark/dist/python/lib ${SPARK_HOME}/python/lib
+# Add PySpark to PYTHON_PATH
+#RUN pip install -e ${SPARK_HOME}/python
+
+
+
 # Add S3A support
 ADD https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.503/aws-java-sdk-bundle-1.12.503.jar ${SPARK_HOME}/jars/
 ADD https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar ${SPARK_HOME}/jars/
