@@ -39,7 +39,6 @@ RUN apt-get update --yes && \
     ca-certificates-java \
     wget && \
     python3 -m venv /opt/venv \
-    pip3 install --upgrade pip setuptools && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     locale-gen
@@ -47,7 +46,7 @@ RUN apt-get update --yes && \
 # Activate virtual environment
 ENV PATH="/opt/venv/bin:$PATH"
 
-RUN pip install jupyterlab 
+RUN pip install jupyterlab --upgrade pip setuptools
 
 ENV JUPYTER_PORT=8888
 EXPOSE $JUPYTER_PORT
