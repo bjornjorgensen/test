@@ -93,7 +93,7 @@ CMD ["start-notebook.py"]
 # Copy local files as late as possible to avoid cache busting
 COPY start-notebook.py start-notebook.sh start-singleuser.py start-singleuser.sh /usr/local/bin/
 COPY jupyter_server_config.py docker_healthcheck.py /etc/jupyter/
-RUN chmod +x /usr/local/bin/start.sh
+
 
 # Configure environment
 ENV SHELL=/bin/bash \
@@ -139,6 +139,7 @@ CMD ["start.sh"]
 
 # Copy local files as late as possible to avoid cache busting
 COPY run-hooks.sh start.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/start.sh
 
 USER root
 
