@@ -140,8 +140,7 @@ COPY run-hooks.sh start.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/start.sh
 
 # Configure container startup
-ENTRYPOINT ["tini", "-g", "--"]
-CMD ["start.sh"]
+
 
 # Create dirs for startup hooks
 RUN mkdir /usr/local/bin/start-notebook.d && \
@@ -154,6 +153,11 @@ HEALTHCHECK --interval=5s --timeout=3s --start-period=5s --retries=3 \
     CMD /etc/jupyter/docker_healthcheck.py || exit 1
 
 # Switch back to jovyan to avoid accidental container runs as root
-USER ${NB_UID}
 
-WORKDIR "${HOME}"
+
+WORKDIR ${HOME}
+USER ${NB_USER}
+
+EXPOSE 8888
+ENTRYPOINT ["tini", "--"]
+CMD ["jupyter", "lab"]
