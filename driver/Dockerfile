@@ -133,15 +133,15 @@ RUN mkdir "/home/${NB_USER}/work" && \
 
 
 
-# Configure container startup
-ENTRYPOINT ["tini", "-g", "--"]
-CMD ["start.sh"]
+USER root
 
 # Copy local files as late as possible to avoid cache busting
 COPY run-hooks.sh start.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/start.sh
 
-USER root
+# Configure container startup
+ENTRYPOINT ["tini", "-g", "--"]
+CMD ["start.sh"]
 
 # Create dirs for startup hooks
 RUN mkdir /usr/local/bin/start-notebook.d && \
