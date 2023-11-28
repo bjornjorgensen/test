@@ -79,8 +79,12 @@ ENV SPARK_HOME /opt/spark
 #COPY --from=builder /tmp/spark/dist/python/pyspark ${SPARK_HOME}/python/pyspark
 #COPY --from=builder /tmp/spark/dist/python/lib ${SPARK_HOME}/python/lib
 COPY --from=builder /tmp/spark/python ${SPARK_HOME}/python/
-# Add PySpark to PYTHON_PATH
-RUN pip install -e ${SPARK_HOME}/python
+# Building and installing the Python package
+RUN cd ${SPARK_HOME}/python && \
+    python setup.py sdist && \
+    pip install dist/*.tar.gz
+
+#RUN pip install -e ${SPARK_HOME}/python
 
 
 
