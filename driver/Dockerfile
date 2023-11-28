@@ -76,8 +76,9 @@ ENV SPARK_HOME /opt/spark
 
 # Copy pyspark with setup files and everything
 #COPY --from=builder /tmp/spark/dist/python ${SPARK_HOME}/python
-COPY --from=builder /tmp/spark/dist/python/pyspark ${SPARK_HOME}/python/pyspark
-COPY --from=builder /tmp/spark/dist/python/lib ${SPARK_HOME}/python/lib
+#COPY --from=builder /tmp/spark/dist/python/pyspark ${SPARK_HOME}/python/pyspark
+#COPY --from=builder /tmp/spark/dist/python/lib ${SPARK_HOME}/python/lib
+COPY --from=builder /tmp/spark/python ${SPARK_HOME}/python/
 # Add PySpark to PYTHON_PATH
 RUN pip install -e ${SPARK_HOME}/python
 
