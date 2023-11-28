@@ -46,7 +46,9 @@ RUN apt-get update --yes && \
 # Activate virtual environment
 ENV PATH="/opt/venv/bin:$PATH"
 
-RUN pip install jupyterlab --upgrade pip setuptools 'black[jupyter]' xmltodict jupyterlab-code-formatter isort python-dotenv nbdev lxml jupyter_ai plotly pyspark-ai pygwalker psycopg2-binary sqlalchemy pyarrow
+RUN pip install --upgrade pip setuptools
+
+RUN pip install jupyterlab 'black[jupyter]' xmltodict jupyterlab-code-formatter isort python-dotenv nbdev lxml jupyter_ai plotly pyspark-ai pygwalker psycopg2-binary sqlalchemy pyarrow
 
 ENV JUPYTER_PORT=8888
 EXPOSE $JUPYTER_PORT
@@ -77,7 +79,7 @@ ENV SPARK_HOME /opt/spark
 COPY --from=builder /tmp/spark/dist/python/pyspark ${SPARK_HOME}/python/pyspark
 COPY --from=builder /tmp/spark/dist/python/lib ${SPARK_HOME}/python/lib
 # Add PySpark to PYTHON_PATH
-#RUN pip install -e ${SPARK_HOME}/python
+RUN pip install -e ${SPARK_HOME}/python
 
 
 
