@@ -46,7 +46,7 @@ RUN apt-get update --yes && \
 # Activate virtual environment
 ENV PATH="/opt/venv/bin:$PATH"
 
-RUN pip install jupyterlab --upgrade pip setuptools
+RUN pip install jupyterlab --upgrade pip setuptools 'black[jupyter]' xmltodict jupyterlab-code-formatter isort python-dotenv nbdev lxml jupyter_ai plotly pyspark-ai pygwalker psycopg2-binary sqlalchemy pyarrow
 
 ENV JUPYTER_PORT=8888
 EXPOSE $JUPYTER_PORT
@@ -154,7 +154,7 @@ HEALTHCHECK --interval=5s --timeout=3s --start-period=5s --retries=3 \
 
 # Switch back to jovyan to avoid accidental container runs as root
 
-
+RUN jupyter labextension disable "@jupyterlab/apputils-extension:announcements"
 WORKDIR ${HOME}
 USER ${NB_USER}
 
