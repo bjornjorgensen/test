@@ -46,7 +46,9 @@ RUN apt-get update --yes && \
 # Activate virtual environment
 ENV PATH="/opt/venv/bin:$PATH"
 
-RUN pip install jupyterlab --upgrade pip setuptools
+RUN pip install --upgrade pip setuptools
+
+RUN pip install jupyterlab 'black[jupyter]' xmltodict jupyterlab-code-formatter isort python-dotenv nbdev lxml jupyter_ai plotly pyspark-ai pygwalker psycopg2-binary sqlalchemy pyarrow
 
 ENV JUPYTER_PORT=8888
 EXPOSE $JUPYTER_PORT
@@ -74,10 +76,17 @@ ENV SPARK_HOME /opt/spark
 
 # Copy pyspark with setup files and everything
 #COPY --from=builder /tmp/spark/dist/python ${SPARK_HOME}/python
-COPY --from=builder /tmp/spark/dist/python/pyspark ${SPARK_HOME}/python/pyspark
-COPY --from=builder /tmp/spark/dist/python/lib ${SPARK_HOME}/python/lib
-# Add PySpark to PYTHON_PATH
-#RUN pip install -e ${SPARK_HOME}/python
+#COPY --from=builder /tmp/spark/dist/python/pyspark ${SPARK_HOME}/python/pyspark
+#COPY --from=builder /tmp/spark/dist/python/lib ${SPARK_HOME}/python/lib
+# We need to copy over the license file so we can pip install PySpark
+COPY --from=builder /tmp/spark/dist/LICENSE /opt/spark/LICENSE
+COPY --from=builder /tmp/spark/dist/licenses /opt/spark/licenses
+COPY --from=builder /tmp/spark/python ${SPARK_HOME}/python/
+# Building and installing the Python package
+#RUN cd ${SPARK_HOME}/python && \
+#    python setup.py sdist && \
+#    pip install dist/*.tar.gz
+RUN pip install -e ${SPARK_HOME}/python
 
 
 
@@ -154,7 +163,7 @@ HEALTHCHECK --interval=5s --timeout=3s --start-period=5s --retries=3 \
 
 # Switch back to jovyan to avoid accidental container runs as root
 
-
+RUN jupyter labextension disable "@jupyterlab/apputils-extension:announcements"
 WORKDIR ${HOME}
 USER ${NB_USER}
 
