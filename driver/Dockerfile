@@ -74,6 +74,10 @@ RUN chmod a+x /opt/decom.sh* || echo "No decom script present, assuming pre-3.1"
 
 ENV SPARK_HOME /opt/spark
 
+# Create dirs for startup hooks
+RUN mkdir /usr/local/bin/start-notebook.d && \
+    mkdir /usr/local/bin/before-notebook.d
+
 # Copy pyspark with setup files and everything
 #COPY --from=builder /tmp/spark/dist/python ${SPARK_HOME}/python
 COPY --from=builder /tmp/spark/dist/python/pyspark ${SPARK_HOME}/python/pyspark
@@ -92,7 +96,7 @@ COPY --from=builder /tmp/spark/dist/licenses /opt/spark/licenses
 ENV SPARK_OPTS=PATH="${PATH}:${SPARK_HOME}/bin"
 
 # Add a link in the before_notebook hook in order to source automatically PYTHONPATH && \
-#RUN ln -s "${SPARK_HOME}/sbin/spark-config.sh" /usr/local/bin/before-notebook.d/spark-config.sh
+RUN ln -s "${SPARK_HOME}/sbin/spark-config.sh" /usr/local/bin/before-notebook.d/spark-config.sh
 
 
 # Add S3A support
@@ -156,9 +160,7 @@ RUN chmod +x /usr/local/bin/start.sh
 # Configure container startup
 
 
-# Create dirs for startup hooks
-RUN mkdir /usr/local/bin/start-notebook.d && \
-    mkdir /usr/local/bin/before-notebook.d
+
 
 # HEALTHCHECK documentation: https://docs.docker.com/engine/reference/builder/#healthcheck
 # This healtcheck works well for `lab`, `notebook`, `nbclassic`, `server`, and `retro` jupyter commands
