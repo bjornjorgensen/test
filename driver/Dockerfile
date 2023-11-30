@@ -92,7 +92,7 @@ COPY --from=builder /tmp/spark/dist/licenses /opt/spark/licenses
 ENV SPARK_OPTS=PATH="${PATH}:${SPARK_HOME}/bin"
 
 # Add a link in the before_notebook hook in order to source automatically PYTHONPATH && \
-RUN ln -s "${SPARK_HOME}/sbin/spark-config.sh" /usr/local/bin/before-notebook.d/spark-config.sh
+#RUN ln -s "${SPARK_HOME}/sbin/spark-config.sh" /usr/local/bin/before-notebook.d/spark-config.sh
 
 
 # Add S3A support
