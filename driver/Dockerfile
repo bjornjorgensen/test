@@ -76,18 +76,23 @@ ENV SPARK_HOME /opt/spark
 
 # Copy pyspark with setup files and everything
 #COPY --from=builder /tmp/spark/dist/python ${SPARK_HOME}/python
-#COPY --from=builder /tmp/spark/dist/python/pyspark ${SPARK_HOME}/python/pyspark
-#COPY --from=builder /tmp/spark/dist/python/lib ${SPARK_HOME}/python/lib
+COPY --from=builder /tmp/spark/dist/python/pyspark ${SPARK_HOME}/python/pyspark
+COPY --from=builder /tmp/spark/dist/python/lib ${SPARK_HOME}/python/lib
 # We need to copy over the license file so we can pip install PySpark
 COPY --from=builder /tmp/spark/dist/LICENSE /opt/spark/LICENSE
 COPY --from=builder /tmp/spark/dist/licenses /opt/spark/licenses
-COPY --from=builder /tmp/spark/python ${SPARK_HOME}/python/
+#COPY --from=builder /tmp/spark/python ${SPARK_HOME}/python/
 # Building and installing the Python package
 #RUN cd ${SPARK_HOME}/python && \
 #    python setup.py sdist && \
 #    pip install dist/*.tar.gz
-RUN pip install -e ${SPARK_HOME}/python
+#RUN pip install -e ${SPARK_HOME}/python
 
+# Configure Spark
+ENV SPARK_OPTS=PATH="${PATH}:${SPARK_HOME}/bin"
+
+# Add a link in the before_notebook hook in order to source automatically PYTHONPATH && \
+RUN ln -s "${SPARK_HOME}/sbin/spark-config.sh" /usr/local/bin/before-notebook.d/spark-config.sh
 
 
 # Add S3A support

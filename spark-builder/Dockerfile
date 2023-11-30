@@ -27,4 +27,4 @@ RUN git clone https://github.com/apache/spark.git
 
 WORKDIR /tmp/spark 
 
-RUN ./dev/make-distribution.sh --name custom-spark -Pkubernetes
+RUN ./dev/make-distribution.sh --name custom-spark --pip -Pkubernetes
