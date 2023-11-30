@@ -175,5 +175,5 @@ WORKDIR ${HOME}
 USER ${NB_USER}
 
 EXPOSE 8888
-ENTRYPOINT ["tini", "--"]
+ENTRYPOINT ["tini", "--", "/opt/entrypoint.sh"]
 CMD ["jupyter", "lab"]
