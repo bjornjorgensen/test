@@ -2,7 +2,10 @@
 # Distributed under the terms of the Modified BSD License.
 FROM bjornjorgensen/spark-builder AS builder
 
-FROM debian:testing
+#ARG REGISTRY=quay.io
+#ARG OWNER=jupyter
+#ARG BASE_CONTAINER=$REGISTRY/$OWNER/scipy-notebook
+FROM quay.io/jupyter/scipy-notebook:latest
 
 
 ARG NB_USER="jovyan"
@@ -10,69 +13,62 @@ ARG NB_UID="1000"
 ARG NB_GID="100"
 ARG openjdk_version="21"
 
-# Fix: https://github.com/hadolint/hadolint/wiki/DL4006
-# Fix: https://github.com/koalaman/shellcheck/wiki/SC3014
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 USER root
 
-# Install all OS dependencies for the Server that starts
-# but lacks all features (e.g., download as all possible file formats)
-ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update --yes && \
-    # - `apt-get upgrade` is run to patch known vulnerabilities in apt-get packages as
-    #   the Ubuntu base image is rebuilt too seldom sometimes (less than once a month)
-    apt-get upgrade --yes && \
     apt-get install --yes --no-install-recommends \
-    ca-certificates \
-    locales \
-    sudo \
-    # - tini is installed as a helpful container entrypoint that reaps zombie
-    #   processes and such of the actual executable we want to start, see
-    #   https://github.com/krallin/tini#why-tini for details.
-    tini \
-    python3 \
-    python3-pip \
-    python3.11-venv \
-    "openjdk-${openjdk_version}-jdk-headless" \
-    "openjdk-${openjdk_version}-jre" \
-    ca-certificates-java \
-    wget && \
-    python3 -m venv /opt/venv \
-    apt-get clean && rm -rf /var/lib/apt/lists/* && \
-    echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
-    locale-gen
+    "openjdk-${openjdk_version}-jre-headless" \
+    ca-certificates-java && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Activate virtual environment
-ENV PATH="/opt/venv/bin:$PATH"
-
-RUN pip install --upgrade pip setuptools
-
-RUN pip install jupyterlab 'black[jupyter]' xmltodict jupyterlab-code-formatter isort python-dotenv nbdev lxml jupyter_ai plotly pyspark-ai pygwalker psycopg2-binary sqlalchemy pyarrow
-
-ENV JUPYTER_PORT=8888
-EXPOSE $JUPYTER_PORT
+# Spark installation
+WORKDIR /tmp
 
 
-COPY --from=builder /tmp/spark/dist/jars /opt/spark/jars
+
+COPY --from=builder /tmp/spark/spark-4.0.0-SNAPSHOT-bin-custom-spark.tgz /tmp/spark.tgz
+
+RUN tar xzf "spark.tgz" -C /usr/local --owner root --group root --no-same-owner && \
+  rm "spark.tgz"
+
+# Configure Spark
+ENV SPARK_HOME=/usr/local/spark
+ENV PATH="${PATH}:${SPARK_HOME}/bin"
+
+
+
+
+RUN ln -s "spark-4.0.0-SNAPSHOT-bin-custom-spark" "${SPARK_HOME}"; \
+  fi && \
+  # Add a link in the before_notebook hook in order to source automatically PYTHONPATH && \
+  ln -s "${SPARK_HOME}/sbin/spark-config.sh" /usr/local/bin/before-notebook.d/spark-config.sh
+
+
+
+
+
+
+#COPY --from=builder /tmp/spark/dist/jars /opt/spark/jars
 # Copy RELEASE file if exists
-COPY --from=builder /tmp/spark/dist/RELEAS[E] /opt/spark/RELEASE
-COPY --from=builder /tmp/spark/dist/bin /opt/spark/bin
-COPY --from=builder /tmp/spark/dist/sbin /opt/spark/sbin
-COPY --from=builder /tmp/spark/dist/kubernetes/dockerfiles/spark/entrypoint.sh /opt/
-COPY --from=builder /tmp/spark/dist/kubernetes/dockerfiles/spark/decom.sh /opt/
-COPY --from=builder /tmp/spark/dist/examples /opt/spark/examples
-RUN ln -s $(basename $(ls /opt/spark/examples/jars/spark-examples_*.jar)) /opt/spark/examples/jars/spark-examples.jar
-COPY --from=builder /tmp/spark/dist/kubernetes/tests /opt/spark/tests
-COPY --from=builder /tmp/spark/dist/data /opt/spark/data
+#COPY --from=builder /tmp/spark/dist/RELEAS[E] /opt/spark/RELEASE
+#COPY --from=builder /tmp/spark/dist/bin /opt/spark/bin
+#COPY --from=builder /tmp/spark/dist/sbin /opt/spark/sbin
+#COPY --from=builder /tmp/spark/dist/kubernetes/dockerfiles/spark/entrypoint.sh /opt/
+#COPY --from=builder /tmp/spark/dist/kubernetes/dockerfiles/spark/decom.sh /opt/
+#COPY --from=builder /tmp/spark/dist/examples /opt/spark/examples
+#RUN ln -s $(basename $(ls /opt/spark/examples/jars/spark-examples_*.jar)) /opt/spark/examples/jars/spark-examples.jar
+#COPY --from=builder /tmp/spark/dist/kubernetes/tests /opt/spark/tests
+#COPY --from=builder /tmp/spark/dist/data /opt/spark/data
 
-RUN mkdir /opt/spark/work-dir
+#RUN mkdir /opt/spark/work-dir
 # Note: don't change the workdir since then your Jupyter notebooks won't persist.
-RUN chmod g+w /opt/spark/work-dir
+#RUN chmod g+w /opt/spark/work-dir
 # Wildcard so it covers decom.sh present (3.1+) and not present (pre-3.1)
-RUN chmod a+x /opt/decom.sh* || echo "No decom script present, assuming pre-3.1"
+#RUN chmod a+x /opt/decom.sh* || echo "No decom script present, assuming pre-3.1"
 
-ENV SPARK_HOME /opt/spark
+#ENV SPARK_HOME /opt/spark
 
 # Create dirs for startup hooks
 RUN mkdir /usr/local/bin/start-notebook.d && \
