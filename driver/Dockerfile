@@ -27,14 +27,14 @@ COPY --from=builder /tmp/spark/spark-4.0.0-SNAPSHOT-bin-custom-spark.tgz /tmp/sp
 RUN tar xzf "spark.tgz" -C /usr/local --owner root --group root --no-same-owner && \
   rm "spark.tgz"
 
-RUN mv /usr/local/spark-4.0.0-SNAPSHOT-bin-custom-spark /usr/local/spark
+RUN mv /usr/local/spark-4.0.0-SNAPSHOT-bin-custom-spark /opt/spark
 
 # Configure Spark
-ENV SPARK_HOME=/usr/local/spark
+ENV SPARK_HOME=/opt/spark
 ENV PATH="${PATH}:${SPARK_HOME}/bin"
 
 
-RUN ls /usr/local/spark
+RUN ls /opt/spark
 RUN ln -s "spark" "${SPARK_HOME}"; \
   # Add a link in the before_notebook hook in order to source automatically PYTHONPATH && \
   ln -s "${SPARK_HOME}/sbin/spark-config.sh" /usr/local/bin/before-notebook.d/spark-config.sh
@@ -53,7 +53,7 @@ RUN jupyter labextension disable "@jupyterlab/apputils-extension:announcements"
 COPY ipython_kernel_config.py "/etc/ipython/"
 RUN fix-permissions "/etc/ipython/"
 
-USER ${NB_UID}
+
 
 # Install pyarrow
 # NOTE: It's important to ensure compatibility between Pandas versions.
@@ -70,6 +70,9 @@ RUN mamba install --yes \
     mamba clean --all -f -y && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
+
+USER ${NB_UID}
+
 
 WORKDIR "${HOME}"
 EXPOSE 4040
