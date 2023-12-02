@@ -35,6 +35,12 @@ ENV PATH="${PATH}:${SPARK_HOME}/bin"
 
 RUN ln -s "spark" "${SPARK_HOME}";
 
+RUN cp ${SPARK_HOME}/kubernetes/dockerfiles/spark/entrypoint.sh /opt/
+RUN cp ${SPARK_HOME}/kubernetes/dockerfiles/spark/decom.sh /opt/
+
+RUN ln -s $(basename $(ls /opt/spark/examples/jars/spark-examples_*.jar)) /opt/spark/examples/jars/spark-examples.jar
+RUN cp ${SPARK_HOME}/kubernetes/tests /opt/spark/tests
+
 # Add S3A support
 ADD https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.503/aws-java-sdk-bundle-1.12.503.jar ${SPARK_HOME}/jars/
 ADD https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar ${SPARK_HOME}/jars/
@@ -42,7 +48,7 @@ ADD https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws
 RUN chmod a+rx ${SPARK_HOME}/jars/*.jar
 WORKDIR /opt/spark/work-dir
 RUN chmod g+w /opt/spark/work-dir
-#RUN chmod a+x /opt/decom.sh
+RUN chmod a+x /opt/decom.sh
 
 ENTRYPOINT [ "/opt/entrypoint.sh" ]
 
