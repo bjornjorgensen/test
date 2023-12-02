@@ -66,7 +66,19 @@ RUN mamba install --yes \
     'grpcio-status' \
     'grpcio' \
     'pandas' \
-    'pyarrow' && \
+    'pyarrow' \
+    'black[jupyter]' \
+    'xmltodict' \
+    'jupyterlab-code-formatter' \
+    'isort' \
+    'python-dotenv' \
+    'nbdev' \
+    'lxml' \
+    'jupyter_ai' \
+    'plotly pyspark-ai' \
+    'pygwalker' \
+    'psycopg2-binary' \
+    'sqlalchemy' && \
     mamba clean --all -f -y && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
