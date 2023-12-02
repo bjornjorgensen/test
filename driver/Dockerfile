@@ -74,8 +74,6 @@ RUN mamba install --yes \
     'python-dotenv' \
     'nbdev' \
     'lxml' \
-    'jupyter_ai' \
-    'plotly pyspark-ai' \
     'pygwalker' \
     'psycopg2-binary' \
     'sqlalchemy' && \
