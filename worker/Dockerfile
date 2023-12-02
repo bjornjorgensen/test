@@ -42,7 +42,7 @@ ADD https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws
 RUN chmod a+rx ${SPARK_HOME}/jars/*.jar
 WORKDIR /opt/spark/work-dir
 RUN chmod g+w /opt/spark/work-dir
-RUN chmod a+x /opt/decom.sh
+#RUN chmod a+x /opt/decom.sh
 
 ENTRYPOINT [ "/opt/entrypoint.sh" ]
 
