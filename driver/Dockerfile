@@ -34,11 +34,9 @@ ENV SPARK_HOME=/opt/spark
 ENV PATH="${PATH}:${SPARK_HOME}/bin"
 
 
-RUN ls /opt/spark
 RUN ln -s "spark" "${SPARK_HOME}"; \
   # Add a link in the before_notebook hook in order to source automatically PYTHONPATH && \
   ln -s "${SPARK_HOME}/sbin/spark-config.sh" /usr/local/bin/before-notebook.d/spark-config.sh
-
 
 
 # Add S3A support
