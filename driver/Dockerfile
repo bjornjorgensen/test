@@ -67,7 +67,6 @@ RUN mamba install --yes \
     'pyarrow' \
     'black[jupyter]' \
     'xmltodict' \
-    'jupyterlab-code-formatter' \
     'isort' \
     'python-dotenv' \
     'nbdev' \
