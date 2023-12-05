@@ -66,6 +66,7 @@ ARG PYTHON_VERSION=3.11
 # files across image layers when the permissions change
 
 WORKDIR /tmp
+
 RUN set -x && \
     arch=$(uname -m) && \
     if [ "${arch}" = "x86_64" ]; then \
@@ -74,15 +75,13 @@ RUN set -x && \
         arch="aarch64"; \
     elif [ "${arch}" = "ppc64le" ]; then \
         arch="ppc64le"; \
-    fi && \ # Add additional architecture checks as necessary
-    # Replace the wget command with the following curl command to download micromamba
+    fi && \
     curl -Ls "https://micro.mamba.pm/api/micromamba/linux-${arch}/latest" | tar -xvj bin/micromamba && \
     mv bin/micromamba ./micromamba && \
     chmod +x ./micromamba && \
     rm -rf bin && \
     PYTHON_SPECIFIER="python=${PYTHON_VERSION}" && \
     if [[ "${PYTHON_VERSION}" == "default" ]]; then PYTHON_SPECIFIER="python"; fi && \
-    # Install the packages
     ./micromamba install \
         --root-prefix="${CONDA_DIR}" \
         --prefix="${CONDA_DIR}" \
@@ -90,7 +89,6 @@ RUN set -x && \
         "${PYTHON_SPECIFIER}" \
         'mamba' && \
     rm ./micromamba && \
-    # Pin major.minor version of python
     mamba list python | grep '^python ' | tr -s ' ' | cut -d ' ' -f 1,2 >> "${CONDA_DIR}/conda-meta/pinned" && \
     mamba clean --all -f -y
 
