@@ -1,6 +1,6 @@
 FROM bjornjorgensen/spark-builder AS builder
 
-FROM python:3.11
+FROM debian:testing
 
 USER root
 
@@ -9,7 +9,7 @@ ARG spark_uid=185
 
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update --yes && \
-    apt install -y "openjdk-${openjdk_version}-jre" ca-certificates-java bash tini libc6 libpam-modules krb5-user libnss3 procps net-tools curl bzip2 && \
+    apt install -y "openjdk-${openjdk_version}-jre" ca-certificates-java bash tini libc6 libpam-modules krb5-user libnss3 procps net-tools curl bzip2 python3 python3-pip && \
     rm /bin/sh && \
     ln -sv /bin/bash /bin/sh && \
     echo "auth required pam_wheel.so use_uid" >> /etc/pam.d/su && \
