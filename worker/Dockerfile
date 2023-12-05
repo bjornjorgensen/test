@@ -9,7 +9,7 @@ ARG spark_uid=185
 
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update --yes && \
-    apt install -y "openjdk-${openjdk_version}-jre" ca-certificates-java bash tini libc6 libpam-modules krb5-user libnss3 procps net-tools wget && \
+    apt install -y "openjdk-${openjdk_version}-jre" ca-certificates-java bash tini libc6 libpam-modules krb5-user libnss3 procps net-tools curl && \
     rm /bin/sh && \
     ln -sv /bin/bash /bin/sh && \
     echo "auth required pam_wheel.so use_uid" >> /etc/pam.d/su && \
@@ -69,13 +69,17 @@ WORKDIR /tmp
 RUN set -x && \
     arch=$(uname -m) && \
     if [ "${arch}" = "x86_64" ]; then \
-        # Should be simpler, see <https://github.com/mamba-org/mamba/issues/1437>
         arch="64"; \
-    fi && \
-    wget --progress=dot:giga -O /tmp/micromamba.tar.bz2 \
-        "https://micromamba.snakepit.net/api/micromamba/linux-${arch}/latest" && \
-    tar -xvjf /tmp/micromamba.tar.bz2 --strip-components=1 bin/micromamba && \
-    rm /tmp/micromamba.tar.bz2 && \
+    elif [ "${arch}" = "aarch64" ]; then \
+        arch="aarch64"; \
+    elif [ "${arch}" = "ppc64le" ]; then \
+        arch="ppc64le"; \
+    fi && \ # Add additional architecture checks as necessary
+    # Replace the wget command with the following curl command to download micromamba
+    curl -Ls "https://micro.mamba.pm/api/micromamba/linux-${arch}/latest" | tar -xvj bin/micromamba && \
+    mv bin/micromamba ./micromamba && \
+    chmod +x ./micromamba && \
+    rm -rf bin && \
     PYTHON_SPECIFIER="python=${PYTHON_VERSION}" && \
     if [[ "${PYTHON_VERSION}" == "default" ]]; then PYTHON_SPECIFIER="python"; fi && \
     # Install the packages
@@ -85,7 +89,7 @@ RUN set -x && \
         --yes \
         "${PYTHON_SPECIFIER}" \
         'mamba' && \
-    rm micromamba && \
+    rm ./micromamba && \
     # Pin major.minor version of python
     mamba list python | grep '^python ' | tr -s ' ' | cut -d ' ' -f 1,2 >> "${CONDA_DIR}/conda-meta/pinned" && \
     mamba clean --all -f -y
