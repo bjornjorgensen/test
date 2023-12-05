@@ -9,7 +9,7 @@ ARG spark_uid=185
 
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update --yes && \
-    apt install -y "openjdk-${openjdk_version}-jre" ca-certificates-java bash tini libc6 libpam-modules krb5-user libnss3 procps net-tools && \
+    apt install -y "openjdk-${openjdk_version}-jre" ca-certificates-java bash tini libc6 libpam-modules krb5-user libnss3 procps net-tools wget && \
     rm /bin/sh && \
     ln -sv /bin/bash /bin/sh && \
     echo "auth required pam_wheel.so use_uid" >> /etc/pam.d/su && \
