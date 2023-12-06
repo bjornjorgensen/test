@@ -19,8 +19,6 @@ RUN apt-get update --yes && \
 # Install pandas using pip
 RUN python3 -m pip install --no-cache-dir --break-system-packages pandas
 
-# Install PySpark from the local Spark directory
-RUN /opt/venv/bin/pip install --no-cache-dir --break-system-packages -e /opt/spark/python
 
 # Spark installation
 WORKDIR /tmp
@@ -40,7 +38,8 @@ ENV PYTHONPATH="${SPARK_HOME}/python:${PYTHONPATH}"
 ENV PYSPARK_PYTHON="/opt/venv/bin/python"
 ENV PYSPARK_DRIVER_PYTHON="/opt/venv/bin/python"
 
-
+# Install PySpark from the local Spark directory
+RUN python3 -m pip install --no-cache-dir --break-system-packages -e /opt/spark/python
 
 RUN ln -s "spark" "${SPARK_HOME}";
 
