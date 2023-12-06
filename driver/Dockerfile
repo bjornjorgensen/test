@@ -69,6 +69,7 @@ RUN pip install --no-cache-dir --upgrade \
         pyarrow \
         pandas
 
+USER root
 # Copy the Spark distribution from the builder stage
 COPY --from=builder /tmp/spark/spark-4.0.0-SNAPSHOT-bin-custom-spark.tgz /tmp/spark.tgz
 
@@ -92,6 +93,10 @@ EXPOSE 8888
 # Copy the entrypoint script into the container and set permissions
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
+
+# Switch to the jovyan user
+USER "${NB_USER}"
+WORKDIR "/home/${NB_USER}"
 
 # Set the entrypoint to the script
 ENTRYPOINT ["/docker-entrypoint.sh"]
