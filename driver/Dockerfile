@@ -70,7 +70,7 @@ RUN pip install --no-cache-dir --upgrade \
         pandas
 
 
-
+USER root
 # Copy the Spark distribution from the builder stage
 COPY --from=builder /tmp/spark/spark-4.0.0-SNAPSHOT-bin-custom-spark.tgz /tmp/spark.tgz
 
