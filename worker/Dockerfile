@@ -16,6 +16,9 @@ RUN apt-get update --yes && \
     chgrp root /etc/passwd && chmod ug+rw /etc/passwd && \
     rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/*
 
+# Install pandas using pip
+RUN python3 -m pip install --no-cache-dir pandas
+
 # Spark installation
 WORKDIR /tmp
 
