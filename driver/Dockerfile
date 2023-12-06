@@ -32,15 +32,20 @@ RUN groupadd --gid "${NB_GID}" "${NB_USER}" && \
     mkdir -p "/home/${NB_USER}" && \
     chown -R "${NB_UID}:${NB_GID}" "/home/${NB_USER}"
 
+
+
+# As root user create the virtual environment
+RUN python3.11 -m venv /opt/venv && \
+    chown -R ${NB_UID}:${NB_GID} /opt/venv
+
 # Switch to the jovyan user
 USER "${NB_USER}"
 WORKDIR "/home/${NB_USER}"
 
-# Create a virtual environment in /opt/venv
-RUN python3.11 -m venv /opt/venv && \
-    # Make sure the virtual environment is activated on login
-    echo ". /opt/venv/bin/activate" >> "/home/${NB_USER}/.bashrc"
+# Set the PATH to include the virtual environment's executables
 ENV PATH="/opt/venv/bin:${PATH}"
+
+
 
 # Install packages using pip in the virtual environment
 RUN pip install --no-cache-dir --upgrade \
@@ -84,8 +89,15 @@ RUN chmod a+rx ${SPARK_HOME}/jars/*.jar
 # Expose the port for JupyterLab
 EXPOSE 8888
 
-# Configure Tini as the entrypoint
-ENTRYPOINT ["/usr/bin/tini", "--"]
+# Copy the entrypoint script into the container and set permissions
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
+# Set the entrypoint to the script
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
 # Start JupyterLab
 CMD ["jupyter-lab", "--ip=0.0.0.0"]
+
+
+
