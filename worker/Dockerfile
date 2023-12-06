@@ -20,7 +20,7 @@ RUN apt-get update --yes && \
 RUN python3 -m pip install --no-cache-dir --break-system-packages pandas
 
 # Install PySpark from the local Spark directory
-RUN /opt/venv/bin/pip install --no-cache-dir -e /opt/spark/python
+RUN /opt/venv/bin/pip install --no-cache-dir --break-system-packages -e /opt/spark/python
 
 # Spark installation
 WORKDIR /tmp
