@@ -68,6 +68,8 @@ RUN pip install --no-cache-dir --upgrade \
         sqlalchemy \
         pyarrow \
         pandas
+# Install PySpark from the local Spark directory
+RUN /opt/venv/bin/pip install --no-cache-dir -e /opt/spark/python
 
 USER root
 # Copy the Spark distribution from the builder stage
@@ -93,6 +95,8 @@ RUN chmod a+rx ${SPARK_HOME}/jars/*.jar
 
 # Expose the port for JupyterLab
 EXPOSE 8888
+
+RUN jupyter labextension disable "@jupyterlab/apputils-extension:announcements"
 
 # Copy the entrypoint script into the container and set permissions
 COPY docker-entrypoint.sh /docker-entrypoint.sh

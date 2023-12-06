@@ -19,9 +19,11 @@ RUN apt-get update --yes && \
 # Install pandas using pip
 RUN python3 -m pip install --no-cache-dir --break-system-packages pandas
 
+# Install PySpark from the local Spark directory
+RUN /opt/venv/bin/pip install --no-cache-dir -e /opt/spark/python
+
 # Spark installation
 WORKDIR /tmp
-
 
 
 COPY --from=builder /tmp/spark/spark-4.0.0-SNAPSHOT-bin-custom-spark.tgz /tmp/spark.tgz
