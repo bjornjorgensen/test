@@ -84,9 +84,9 @@ ENV SPARK_HOME="/opt/spark"
 ENV PATH="${SPARK_HOME}/bin:${PATH}"
 
 
-USER "${NB_USER}"
+#USER "${NB_USER}"
 # Install PySpark from the local Spark directory
-#RUN pip install -e /opt/spark/python
+RUN pip install -e /opt/spark/python
 
 USER root
 # Add Jars for S3A support to the Spark Jars directory and update the permissions
