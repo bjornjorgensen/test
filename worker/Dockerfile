@@ -31,9 +31,12 @@ RUN tar xzf "spark.tgz" -C /usr/local --owner root --group root --no-same-owner 
 
 RUN mv /usr/local/spark-4.0.0-SNAPSHOT-bin-custom-spark /opt/spark
 
-# Configure Spark
-ENV SPARK_HOME=/opt/spark
-ENV PATH="${PATH}:${SPARK_HOME}/bin"
+# Configure Spark paths
+ENV SPARK_HOME="/opt/spark"
+ENV PATH="${SPARK_HOME}/bin:${PATH}"
+ENV PYTHONPATH="${SPARK_HOME}/python:${PYTHONPATH}"
+ENV PYSPARK_PYTHON="/opt/venv/bin/python"
+ENV PYSPARK_DRIVER_PYTHON="/opt/venv/bin/python"
 
 
 

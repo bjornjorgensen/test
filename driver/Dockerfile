@@ -81,6 +81,10 @@ RUN tar xzf /tmp/spark.tgz -C /usr/local && \
 # Configure Spark paths
 ENV SPARK_HOME="/opt/spark"
 ENV PATH="${SPARK_HOME}/bin:${PATH}"
+ENV PYTHONPATH="${SPARK_HOME}/python:${PYTHONPATH}"
+ENV PYSPARK_PYTHON="/opt/venv/bin/python"
+ENV PYSPARK_DRIVER_PYTHON="/opt/venv/bin/python"
+
 
 # Add Jars for S3A support to the Spark Jars directory and update the permissions
 ADD https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.503/aws-java-sdk-bundle-1.12.503.jar ${SPARK_HOME}/jars/
