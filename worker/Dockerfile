@@ -37,7 +37,7 @@ ENV PATH="${SPARK_HOME}/bin:${PATH}"
 
 
 # Install PySpark from the local Spark directory
-RUN python3 -m pip install --no-cache-dir --break-system-packages -e /opt/spark/python
+#RUN python3 -m pip install --no-cache-dir --break-system-packages -e /opt/spark/python
 
 RUN ln -s "spark" "${SPARK_HOME}";
 
