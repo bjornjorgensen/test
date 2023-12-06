@@ -68,10 +68,9 @@ RUN pip install --no-cache-dir --upgrade \
         sqlalchemy \
         pyarrow \
         pandas
-# Install PySpark from the local Spark directory
-RUN /opt/venv/bin/pip install --no-cache-dir -e /opt/spark/python
 
-USER root
+
+
 # Copy the Spark distribution from the builder stage
 COPY --from=builder /tmp/spark/spark-4.0.0-SNAPSHOT-bin-custom-spark.tgz /tmp/spark.tgz
 
@@ -87,7 +86,11 @@ ENV PYTHONPATH="${SPARK_HOME}/python:${PYTHONPATH}"
 ENV PYSPARK_PYTHON="/opt/venv/bin/python"
 ENV PYSPARK_DRIVER_PYTHON="/opt/venv/bin/python"
 
+USER "${NB_USER}"
+# Install PySpark from the local Spark directory
+RUN /opt/venv/bin/pip install --no-cache-dir -e /opt/spark/python
 
+USER root
 # Add Jars for S3A support to the Spark Jars directory and update the permissions
 ADD https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.503/aws-java-sdk-bundle-1.12.503.jar ${SPARK_HOME}/jars/
 ADD https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar ${SPARK_HOME}/jars/
