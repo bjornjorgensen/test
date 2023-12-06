@@ -82,9 +82,7 @@ RUN tar xzf /tmp/spark.tgz -C /usr/local && \
 # Configure Spark paths
 ENV SPARK_HOME="/opt/spark"
 ENV PATH="${SPARK_HOME}/bin:${PATH}"
-ENV PYTHONPATH="${SPARK_HOME}/python:${PYTHONPATH}"
-ENV PYSPARK_PYTHON="/opt/venv/bin/python"
-ENV PYSPARK_DRIVER_PYTHON="/opt/venv/bin/python"
+
 
 USER "${NB_USER}"
 # Install PySpark from the local Spark directory

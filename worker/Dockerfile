@@ -34,9 +34,7 @@ RUN mv /usr/local/spark-4.0.0-SNAPSHOT-bin-custom-spark /opt/spark
 # Configure Spark paths
 ENV SPARK_HOME="/opt/spark"
 ENV PATH="${SPARK_HOME}/bin:${PATH}"
-ENV PYTHONPATH="${SPARK_HOME}/python:${PYTHONPATH}"
-ENV PYSPARK_PYTHON="/opt/venv/bin/python"
-ENV PYSPARK_DRIVER_PYTHON="/opt/venv/bin/python"
+
 
 # Install PySpark from the local Spark directory
 RUN python3 -m pip install --no-cache-dir --break-system-packages -e /opt/spark/python
