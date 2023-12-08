@@ -16,6 +16,7 @@ RUN apt-get update && \
     python3.11 \
     python3.11-venv \
     tini \
+    procps \
     "openjdk-${openjdk_version}-jre-headless" \
     ca-certificates-java && \
     apt-get clean && \
