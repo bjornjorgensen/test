@@ -112,7 +112,7 @@ WORKDIR "/home/${NB_USER}"
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
 # Start JupyterLab
-CMD ["jupyter-lab", "--ip=0.0.0.0"]
+CMD ["jupyter-lab", "--ip=0.0.0.0", "--no-browser"]
 
 
 
