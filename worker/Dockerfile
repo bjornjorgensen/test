@@ -9,7 +9,7 @@ ARG spark_uid=185
 
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update --yes && \
-    apt install -y "openjdk-${openjdk_version}-jdk" ca-certificates-java bash tini libc6 libpam-modules krb5-user libnss3 procps net-tools curl bzip2 python3.12 python3-pip procps && \
+    apt install -y "openjdk-${openjdk_version}-jdk" ca-certificates-java bash tini libc6 libpam-modules krb5-user libnss3 procps net-tools curl bzip2 python3.11 python3-pip procps && \
     rm /bin/sh && \
     ln -sv /bin/bash /bin/sh && \
     echo "auth required pam_wheel.so use_uid" >> /etc/pam.d/su && \
@@ -17,7 +17,7 @@ RUN apt-get update --yes && \
     rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/*
 
 # Install pandas using pip
-RUN python3.12 -m pip install --no-cache-dir --break-system-packages pandas pyarrow
+RUN python -m pip install --no-cache-dir --break-system-packages pandas pyarrow
 
 
 # Spark installation
