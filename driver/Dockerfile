@@ -13,8 +13,8 @@ ARG openjdk_version="21"
 # Update the package lists, install Python 3.11, tini, OpenJDK, and required certificates
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    python3.11 \
-    python3.11-venv \
+    python3.12 \
+    python3.12-venv \
     tini \
     procps \
     "openjdk-${openjdk_version}-jdk" \
@@ -36,7 +36,7 @@ RUN groupadd --gid "${NB_GID}" "${NB_USER}" && \
 
 
 # As root user create the virtual environment
-RUN python3.11 -m venv /opt/venv && \
+RUN python3.12 -m venv /opt/venv && \
     chown -R ${NB_UID}:${NB_GID} /opt/venv
 
 # Switch to the jovyan user
