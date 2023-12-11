@@ -49,7 +49,7 @@ RUN cp -r ${SPARK_HOME}/kubernetes/tests /opt/spark/tests
 
 
 # Add S3A support
-ADD https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.503/aws-java-sdk-bundle-1.12.503.jar ${SPARK_HOME}/jars/
+ADD https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.608/aws-java-sdk-bundle-1.12.608.jar ${SPARK_HOME}/jars/
 ADD https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar ${SPARK_HOME}/jars/
 
 RUN chmod a+rx ${SPARK_HOME}/jars/*.jar
