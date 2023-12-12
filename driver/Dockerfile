@@ -104,6 +104,9 @@ RUN jupyter labextension disable "@jupyterlab/apputils-extension:announcements"
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
+WORKDIR /opt/spark/work-dir
+RUN chmod g+w /opt/spark/work-dir
+
 # Switch to the jovyan user
 USER "${NB_USER}"
 WORKDIR "/home/${NB_USER}"
